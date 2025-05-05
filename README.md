@@ -1,8 +1,8 @@
-### OpenWakeWord Socket
+## OpenWakeWord Socket
 
 A simple openwakeword service that runs as a websocket server.
 
-## Installation
+### Installation
 
 ```
 pip install -r requirements.txt
