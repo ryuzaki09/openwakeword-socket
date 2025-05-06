@@ -9,7 +9,7 @@ import time
 
 # Parse input arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--chunk_size", type=int, default=1280)
+parser.add_argument("--chunk_size", type=int, default=2048)
 # parser.add_argument("--model_path", type=str, default="")
 parser.add_argument("--inference_framework", type=str, default='onnx')  # use onnx to avoid tflite issues
 args = parser.parse_args()
@@ -43,7 +43,7 @@ async def wakeword_loop():
     print("Wake word detection started. Waiting for connections...")
 
     while True:
-        audio_chunk = np.frombuffer(mic_stream.read(CHUNK), dtype=np.int16)
+        audio_chunk = np.frombuffer(mic_stream.read(CHUNK, exception_on_overflow=False), dtype=np.int16)
         prediction = owwModel.predict(audio_chunk)
 
         detected = any(scores[-1] > 0.5 for scores in owwModel.prediction_buffer.values())
@@ -57,7 +57,7 @@ async def wakeword_loop():
                 # await ws.send("wakeword_detected")
                 await notify_clients({"message": "wakeword_detected"})
 
-        await asyncio.sleep(0.01)  # yield to event loop
+        await asyncio.sleep(0.001)  # yield to event loop
 
 async def handler(websocket):
     clients.add(websocket)
